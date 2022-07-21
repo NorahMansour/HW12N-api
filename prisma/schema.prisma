@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+//model user {
+//id       String   @id @default(auto()) @map("_id") @db.ObjectId
+// name     String?
+//password String
+//  email String
+// ticket Ticket[]
+
+//}
+
+model Event {
+
+  event_id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  deta          String
+  Start_endTime String
+  location      String
+  description   String
+  tickets_count String
+  tickets       Ticket?
+  User          User?   @relation(fields: [userUser_id], references: [user_id])
+  userUser_id   String? @db.ObjectId
+}
+
+model Ticket {
+  ticket_id String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  date      String
+
+  user          User?        @relation(fields: [userId], references: [user_id])
+  userId        String?      @db.ObjectId
+  Event         Event?       @relation(fields: [eventEvent_id], references: [event_id])
+  eventEvent_id String?      @unique @db.ObjectId
+  // User          User[]
+  Reservation   Reservation?
+}
+
+model User {
+  user_id  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  password String
+  email    String
+  tickets  Ticket[]
+
+  role            UserRole  @default(user)
+  ticketTicket_id String?   @db.ObjectId
+  Event           Event[]
+  Payment         Payment[]
+}
+
+enum UserRole {
+  user
+  admin
+
+}
+
+model Payment {
+  payment_id    String @id @default(auto()) @map("_id") @db.ObjectId
+  paymentDate   String
+  paymentAmount String
+  payers_id     String @db.ObjectId
+  user          User   @relation(fields: [payers_id], references: [user_id])
+
+}
+
+model Reservation {
+  reservation_id String @id @default(auto()) @map("_id") @db.ObjectId
+ event_name String
+  date          String
+  total  String
+  tickets_id     String? @unique
+  ticket        Ticket?  @relation(fields: [tickets_id], references: [ticket_id])
+
+
+}
+model Task {
+  task_id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  input      String
+  is_checked Boolean
+}
